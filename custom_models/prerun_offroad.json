@@ -1,0 +1,16 @@
+{
+  "distance_influence": 1,
+  "priority": [
+    { "if": "car_access == false && prerun_source == MISSING", "multiply_by": "0" },
+    { "if": "prerun_source == TRAIL", "multiply_by": "1.2" },
+    { "if": "prerun_ohv_designation == CLOSED", "multiply_by": "0" }
+  ],
+  "speed": [
+    { "if": "track_type == GRADE4 || track_type == GRADE5", "limit_to": 10 },
+    { "else_if": "track_type == GRADE3", "limit_to": 20 },
+    { "else_if": "track_type == GRADE2", "limit_to": 30 },
+    { "else_if": "road_environment == FERRY", "limit_to": "ferry_speed" },
+    { "else": "", "limit_to": "car_average_speed" },
+    { "if": "true", "limit_to": "max_speed * 0.9" }
+  ]
+}

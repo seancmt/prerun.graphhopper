@@ -343,6 +343,42 @@ public class DefaultImportRegistry implements ImportRegistry {
                     (lookup, props) -> new OSMLitParser(
                             lookup.getBooleanEncodedValue(Lit.KEY))
             );
+
+        // ── PreRun custom encoded values for off-road trail routing ──
+        else if (PrerunSource.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunSource.create(), null);
+        else if (PrerunTrailClass.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunTrailClass.create(), null);
+        else if (PrerunMaintLevel.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunMaintLevel.create(), null);
+        else if (PrerunOhvDesignation.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunOhvDesignation.create(), null);
+        else if (PrerunSeasonal.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunSeasonal.create(), null);
+        else if (PrerunDirtBike.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunDirtBike.create(), null);
+        else if (PrerunAtv.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunAtv.create(), null);
+        else if (PrerunUtv50.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunUtv50.create(), null);
+        // PrerunFullSize is the last one — attach the parser here with all others as dependencies
+        else if (PrerunFullSize.KEY.equals(name))
+            return ImportUnit.create(name, props -> PrerunFullSize.create(),
+                    (lookup, props) -> new OSMPrerunTagParser(
+                            lookup.getEnumEncodedValue(PrerunSource.KEY, PrerunSource.class),
+                            lookup.getEnumEncodedValue(PrerunTrailClass.KEY, PrerunTrailClass.class),
+                            lookup.getEnumEncodedValue(PrerunMaintLevel.KEY, PrerunMaintLevel.class),
+                            lookup.getEnumEncodedValue(PrerunOhvDesignation.KEY, PrerunOhvDesignation.class),
+                            lookup.getEnumEncodedValue(PrerunSeasonal.KEY, PrerunSeasonal.class),
+                            lookup.getBooleanEncodedValue(PrerunDirtBike.KEY),
+                            lookup.getBooleanEncodedValue(PrerunAtv.KEY),
+                            lookup.getBooleanEncodedValue(PrerunUtv50.KEY),
+                            lookup.getBooleanEncodedValue(PrerunFullSize.KEY)
+                    ),
+                    PrerunSource.KEY, PrerunTrailClass.KEY, PrerunMaintLevel.KEY,
+                    PrerunOhvDesignation.KEY, PrerunSeasonal.KEY,
+                    PrerunDirtBike.KEY, PrerunAtv.KEY, PrerunUtv50.KEY
+            );
         return null;
     }
 }

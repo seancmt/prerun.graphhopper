@@ -1,0 +1,64 @@
+graphhopper:
+
+  # US roads + PreRun trail data merged PBF
+  datareader.file: us-with-trails.osm.pbf
+  graph.location: graph-cache
+
+  ##### Routing Profiles ####
+
+  profiles:
+    - name: offroad
+      turn_costs:
+        vehicle_types: [motorcar, motor_vehicle]
+        u_turn_costs: 60
+      custom_model_files: [prerun_offroad.json]
+
+  # No CH preparation — we need flexible mode for per-request custom models
+  profiles_ch: []
+  profiles_lm: []
+
+  #### Encoded Values ####
+
+  graph.encoded_values: |
+    car_access, car_average_speed, road_class, road_environment, roundabout, max_speed, ferry_speed,
+    surface, track_type, road_access,
+    prerun_source, prerun_trail_class, prerun_maint_level, prerun_ohv_designation, prerun_seasonal,
+    prerun_dirt_bike, prerun_atv, prerun_utv_50, prerun_full_size
+
+  # Custom model files directory
+  custom_models.directory: custom_models
+
+  #### Elevation ####
+  graph.elevation.provider: srtm
+
+  #### Subnetworks ####
+  # Lower threshold since trail data has many small disconnected networks
+  prepare.min_network_size: 50
+  prepare.subnetworks.threads: 1
+
+  #### Routing ####
+  routing.non_ch.max_waypoint_distance: 1000000
+
+  #### Storage ####
+  # Don't ignore tracks — they're our trail data
+  import.osm.ignored_highways: ''
+  graph.dataaccess.default_type: RAM_STORE
+
+# Dropwizard server configuration
+server:
+  application_connectors:
+  - type: http
+    port: 8989
+    bind_host: 0.0.0.0
+    max_request_header_size: 50k
+  request_log:
+      appenders: []
+  admin_connectors:
+  - type: http
+    port: 8990
+    bind_host: 0.0.0.0
+logging:
+  appenders:
+    - type: console
+      time_zone: UTC
+      log_format: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
