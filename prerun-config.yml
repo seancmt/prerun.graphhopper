@@ -32,8 +32,15 @@ graphhopper:
   graph.elevation.provider: srtm
 
   #### Subnetworks ####
-  # Lower threshold since trail data has many small disconnected networks
-  prepare.min_network_size: 50
+  # 1 (was 50) — isolated linear trails (dead-end dirt-bike / ATV / hiking
+  # trails with no junctions) compress to a single edge in GraphHopper.
+  # A threshold ≥ 2 prunes them ALL regardless of raw physical length,
+  # even after the motor_vehicle=yes fix in geojson_to_osm.py made them
+  # car_access=true. Set to 1 so single-edge OHV spurs survive pruning.
+  # Cost: keeps the ~1.35M edges (~1% of graph) that would otherwise be
+  # dropped as glitch subnetworks. Acceptable — most of those are legit
+  # trail data too.
+  prepare.min_network_size: 1
   prepare.subnetworks.threads: 1
 
   #### Routing ####
